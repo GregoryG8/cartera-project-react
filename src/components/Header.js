@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -33,6 +33,31 @@ const socials = [
 ];
 
 const Header = () => {
+  const [transform, setTransform] = useState("translateY(0)");
+  const prevScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > prevScrollY.current) {
+        // Scrolling down
+        setTransform("translateY(-200px)");
+      } else {
+        // Scrolling up
+        setTransform("translateY(0)");
+      }
+
+      prevScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const handleClick = (anchor) => () => {
     const id = `${anchor}-section`;
     const element = document.getElementById(id);
@@ -50,7 +75,7 @@ const Header = () => {
       top={0}
       left={0}
       right={0}
-      translateY={0}
+      transform={transform}
       transitionProperty="transform"
       transitionDuration=".3s"
       transitionTimingFunction="ease-in-out"
@@ -65,18 +90,24 @@ const Header = () => {
         >
           <nav>
             <HStack spacing={7}>
-              {socials.map((social,index) => {
-                return <a key={index} href={social.url}>
-                    <FontAwesomeIcon icon={social.icon} size="2x"/>
-                </a>
+              {socials.map((social, index) => {
+                return (
+                  <a key={index} href={social.url}>
+                    <FontAwesomeIcon icon={social.icon} size="2x" />
+                  </a>
+                );
               })}
             </HStack>
           </nav>
           <nav>
             <HStack spacing={8}>
               {/* Add links to Projects and Contact me section */}
-              <a href="/#projects-section" onClick={handleClick("projects")}>Projects</a>
-              <a href="/#contactme-section" onClick={handleClick("contactme")}>Contact Me</a>
+              <a href="/#projects-section" onClick={handleClick("projects")}>
+                Projects
+              </a>
+              <a href="/#contactme-section" onClick={handleClick("contactme")}>
+                Contact Me
+              </a>
             </HStack>
           </nav>
         </HStack>
@@ -84,4 +115,5 @@ const Header = () => {
     </Box>
   );
 };
+
 export default Header;

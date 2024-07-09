@@ -1,24 +1,24 @@
-import {createContext, useContext, useState} from "react";
+import { createContext, useContext, useState } from "react";
 
-const AlertContext = createContext(undefined);
+const AlertContext = createContext();
 
 export const AlertProvider = ({ children }) => {
   const [state, setState] = useState({
     isOpen: false,
-    // Type can be either "success" or "error"
     type: 'success',
-    // Message to be displayed, can be any string
     message: '',
   });
 
+  const onOpen = (message, type = 'success') => {
+    setState({ isOpen: true, type, message });
+  };
+
+  const onClose = () => {
+    setState({ ...state, isOpen: false });
+  };
+
   return (
-    <AlertContext.Provider
-      value={{
-        ...state,
-        onOpen: (type, message) => setState({ isOpen: true, type, message }),
-        onClose: () => setState({ isOpen: false, type: '', message: '' }),
-      }}
-    >
+    <AlertContext.Provider value={{ ...state, onOpen, onClose }}>
       {children}
     </AlertContext.Provider>
   );
